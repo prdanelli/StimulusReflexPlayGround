@@ -1,0 +1,20 @@
+<div class="row">
+	<div class="col-12 mb-2">
+		<%= form_with model: todo, local: true, html: { data: { signed_id: todo.to_sgid.to_s } } do |f| %>
+			<%= f.hidden_field :id %>
+			<div class="input-group">
+			  <div class="input-group-prepend">
+			  	<div class="input-group-text">
+				  	<%= f.check_box :completed_at, checked: todo&.complete?, data: { reflex: "change->Todo#update" } %>
+				  </div>
+			  </div>
+
+			  <%= f.text_field :description, class: "form-control", data: { id: todo.id, reflex: "change->Todo#update" }, readonly: todo.complete? %>
+
+			  <div class="input-group-append">
+			  	<%= link_to 'Destroy', todo, method: :delete, data: { id: todo.id, reflex: "click->Todo#destroy" }, class: "btn btn-danger" %>
+			  </div>
+			</div>
+	  <% end %>
+  </div>
+</div>
