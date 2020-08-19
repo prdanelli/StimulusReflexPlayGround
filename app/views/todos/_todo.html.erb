@@ -1,9 +1,13 @@
-<div class="row">
-	<div class="col-12 mb-2">
-		<%= form_with model: todo, local: true, html: { data: { signed_id: todo.to_sgid.to_s } } do |f| %>
+	<%= form_with model: todo, html: { data: { id: todo.id }, class: "row mt-3" } do |f| %>
+		<div class="col-12">
 			<%= f.hidden_field :id %>
 			<div class="input-group">
 			  <div class="input-group-prepend">
+			  	<% if todo.incomplete? %>
+					  <div class="input-group-text">
+						  <a href="#" class="" style="color: black;">&#10021;</a>
+						</div>
+					 <% end %>
 			  	<div class="input-group-text">
 				  	<%= f.check_box :completed_at, checked: todo&.complete?, data: { reflex: "change->Todo#update" } %>
 				  </div>
@@ -12,9 +16,12 @@
 			  <%= f.text_field :description, class: "form-control", data: { id: todo.id, reflex: "change->Todo#update" }, readonly: todo.complete? %>
 
 			  <div class="input-group-append">
-			  	<%= link_to 'Destroy', todo, method: :delete, data: { id: todo.id, reflex: "click->Todo#destroy" }, class: "btn btn-danger" %>
+			  	<%= f.text_field :position, readonly: true, class: "form-control" %>
+			  	<%== link_to todo, method: :delete, data: { id: todo.id, reflex: "click->Todo#destroy" }, class: "btn btn-danger" do %>
+				  	&#10005;
+			  	<% end %>
 			  </div>
 			</div>
-	  <% end %>
-  </div>
-</div>
+		</div>
+	<% end %>
+

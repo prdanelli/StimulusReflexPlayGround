@@ -41,3 +41,5 @@ tmp/
 storage/**/*
 log/
 public/packs/js/*
+
+.DS_Store

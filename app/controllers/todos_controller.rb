@@ -1,5 +1,5 @@
 class TodosController < ApplicationController
-  before_action :set_todo, only: [:show, :edit, :update, :destroy]
+  before_action :set_todo, only: [:show, :edit, :update, :destroy, :move]
 
   def index
     @todos = Todo.all
@@ -28,6 +28,11 @@ class TodosController < ApplicationController
     if @todo.destroy
       redirect_to todos_url, notice: 'Todo was successfully destroyed.'
     end
+  end
+
+  def move
+    @todo.insert_at(params[:position].to_i)
+    head :ok
   end
 
   private

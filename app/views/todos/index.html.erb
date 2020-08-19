@@ -14,23 +14,25 @@
 					<h4>Your Todos</h4>
 				</div>
 
-				<div class="col-12">
+				<div class="col-12" data-controller="drag" data-drag-url="/todos/:id/move">
 			  	<% if @todos.incomplete.any? %>
-				    <% @todos.incomplete.each do |todo| %>
-				      <%= render "todo", todo: todo %>
-				    <% end %>
+			    	<% @todos.incomplete.positioned.each do |todo| %>
+			    	  <%= render "todo", todo: todo %>
+			    	<% end %>
 			    <% end %>
 				</div>
 
-				<div class="col-12">
-					<hr class="dashed mb-4" />
-				</div>
+				<% if @todos.complete.any? %>
+					<div class="col-12 mt-3">
+						<hr class="dashed mb-3" />
+					</div>
 
-				<div class="col-12">
-					<% @todos.complete.each do |todo| %>
-					  <%= render "todo", todo: todo %>
-					<% end %>
-				</div>
+					<div class="col-12">
+						<% @todos.complete.alphabetical.each do |todo| %>
+						  <%= render "todo", todo: todo %>
+						<% end %>
+					</div>
+				<% end %>
 			</div>
 		</div>
 	</div>

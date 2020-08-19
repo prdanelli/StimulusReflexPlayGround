@@ -1,7 +1,8 @@
 # TODO:
 # Clear the input after todo is created
-# add validations
 # add reordering with acts as list
+  # - https://www.youtube.com/watch?v=r884jAqAbHY
+  # Try and update the positions of the elements in the stimulus controller, then trigger a stimulusreflex action to update them
 
 class TodoReflex < ApplicationReflex
   before_reflex :build_todo, except: :create
@@ -14,8 +15,6 @@ class TodoReflex < ApplicationReflex
       @todo.save
 
       clear_todo
-
-      binding.pry
     else
       @todo
     end
