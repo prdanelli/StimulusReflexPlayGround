@@ -16,7 +16,6 @@
 			  <%= f.text_field :description, class: "form-control", data: { id: todo.id, reflex: "change->Todo#update" }, readonly: todo.complete? %>
 
 			  <div class="input-group-append">
-			  	<%= f.text_field :position, readonly: true, class: "form-control" %>
 			  	<%== link_to todo, method: :delete, data: { id: todo.id, reflex: "click->Todo#destroy" }, class: "btn btn-danger" do %>
 				  	&#10005;
 			  	<% end %>
