@@ -1,13 +1,14 @@
 	<%= form_with model: todo, html: { data: { id: todo.id }, class: "row mt-3" } do |f| %>
 		<div class="col-12">
 			<%= f.hidden_field :id %>
+
 			<div class="input-group">
 			  <div class="input-group-prepend">
 			  	<% if todo.incomplete? %>
-					  <div class="input-group-text">
+					  <div class="input-group-text js-sortable-handle">
 						  <a href="#" class="" style="color: black;">&#10021;</a>
 						</div>
-					 <% end %>
+					<% end %>
 			  	<div class="input-group-text">
 				  	<%= f.check_box :completed_at, checked: todo&.complete?, data: { reflex: "change->Todo#update" } %>
 				  </div>

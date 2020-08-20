@@ -4,7 +4,8 @@ import Sortable from "sortablejs"
 export default class extends ApplicationController {
   connect() {
     this.sortable = Sortable.create(this.element, {
-      onEnd: this.end.bind(this)
+      onEnd: this.end.bind(this),
+      handle: ".js-sortable-handle"
     })
   }
 
