@@ -9,7 +9,8 @@ RUN apt-get update && apt-get install -y yarn
 
 RUN rm -rf /var/lib/apt/lists/*
 
-WORKDIR /usr/src/app
+RUN mkdir -p /app
+WORKDIR /app
 
 COPY Gemfile Gemfile.lock package* yarn* ./
 
