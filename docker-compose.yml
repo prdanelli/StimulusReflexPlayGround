@@ -12,8 +12,10 @@ services:
       - db
       - webpacker
     environment:
+      ACTION_CABLE_ADAPTER: any_cable
       REDIS_URL: redis://redis:6379/0
       REDIS_SIDEKIQ_URL: redis://redis:6379/1
+      CABLE_URL: ws://localhost:8080/cable
     stdin_open: true
     tty: true
 
@@ -68,3 +70,30 @@ services:
       - 3035:3035
     environment:
       WEBPACKER_DEV_SERVER_HOST: 0.0.0.0
+
+  ws:
+    image: anycable/anycable-go:1.0
+    ports:
+      - 8080:8080
+    environment:
+      ANYCABLE_HOST: 0.0.0.0
+      ANYCABLE_REDIS_URL: redis://redis:6379/0
+      ANYCABLE_RPC_HOST: anycable:50051
+      ANYCABLE_DEBUG: 1
+    depends_on:
+      - redis
+
+  anycable:
+    build: .
+    command: bundle exec anycable
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      WEBPACKER_DEV_SERVER_HOST: webpacker
+      ANYCABLE_REDIS_URL: redis://redis:6379/0
+      ANYCABLE_RPC_HOST: 0.0.0.0:50051
+      ANYCABLE_DEBUG: 1
+    ports:
+      - 50051
+    depends_on:
+      - ws
+      - redis
