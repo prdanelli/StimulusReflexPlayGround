@@ -11,11 +11,15 @@ services:
     depends_on:
       - db
       - webpacker
-    environment:
+    environment: &app_env
       ACTION_CABLE_ADAPTER: any_cable
       REDIS_URL: redis://redis:6379/0
       REDIS_SIDEKIQ_URL: redis://redis:6379/1
       CABLE_URL: ws://localhost:8080/cable
+      WEBPACKER_DEV_SERVER_HOST: webpacker
+      ANYCABLE_REDIS_URL: redis://redis:6379/0
+      ANYCABLE_RPC_HOST: anycable:50051
+      ANYCABLE_HOST: 0.0.0.0
     stdin_open: true
     tty: true
 
@@ -46,6 +50,7 @@ services:
       - app
       - redis
     environment:
+      <<: *app_env
       REDIS_URL: redis://redis:6379/1
 
   redis:
@@ -63,12 +68,13 @@ services:
 
   webpacker:
     build: .
-    command: bash -c "yarn && rm -rf /app/public/packs && bin/webpack-dev-server"
+    command: bash -c "./bin/webpack-dev-server"
     volumes:
       - .:/app
     ports:
       - 3035:3035
     environment:
+      <<: *app_env
       WEBPACKER_DEV_SERVER_HOST: 0.0.0.0
 
   ws:
@@ -76,10 +82,7 @@ services:
     ports:
       - 8080:8080
     environment:
-      ANYCABLE_HOST: 0.0.0.0
-      ANYCABLE_REDIS_URL: redis://redis:6379/0
-      ANYCABLE_RPC_HOST: anycable:50051
-      ANYCABLE_DEBUG: 1
+      <<: *app_env
     depends_on:
       - redis
 
@@ -87,10 +90,7 @@ services:
     build: .
     command: bundle exec anycable
     environment:
-      REDIS_URL: redis://redis:6379/0
-      WEBPACKER_DEV_SERVER_HOST: webpacker
-      ANYCABLE_REDIS_URL: redis://redis:6379/0
-      ANYCABLE_RPC_HOST: 0.0.0.0:50051
+      <<: *app_env
       ANYCABLE_DEBUG: 1
     ports:
       - 50051
