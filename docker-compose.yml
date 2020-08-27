@@ -19,6 +19,7 @@ services:
       WEBPACKER_DEV_SERVER_HOST: webpacker
       ANYCABLE_REDIS_URL: redis://redis:6379/0
       ANYCABLE_RPC_HOST: anycable:50051
+      # ANYCABLE_HOST needs to be set 0.0.0.0 and shared between containers or the connection will fail
       ANYCABLE_HOST: 0.0.0.0
     stdin_open: true
     tty: true
@@ -91,7 +92,7 @@ services:
     command: bundle exec anycable
     environment:
       <<: *app_env
-      ANYCABLE_DEBUG: 1
+      ANYCABLE_DEBUG: 0
     ports:
       - 50051
     depends_on:

@@ -13,7 +13,6 @@ RUN mkdir -p /app
 WORKDIR /app
 
 COPY Gemfile Gemfile.lock package* yarn* ./
-
 RUN yarn install --check-files
 RUN gem install bundler && bundle install
 
