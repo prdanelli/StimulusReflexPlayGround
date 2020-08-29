@@ -11,7 +11,11 @@
 
 			<div class="row">
 				<div class="col-12 mb-3">
-					<h4>Your Todos</h4>
+					<span class="connection-status" data-reflex-permanent>
+						<i class="fas fa-times-circle fa-2x disconnected"></i>
+						<i class="fas fa-check-circle fa-2x connected"></i>
+					</span>
+					<h4 class="main-title">Your Todos</h4>
 				</div>
 
 				<div class="col-12" data-controller="drag" data-drag-url="/todos/:id/move">

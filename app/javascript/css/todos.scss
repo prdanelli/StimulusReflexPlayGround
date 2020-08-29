@@ -1,0 +1,53 @@
+// Place all the styles related to the Todos controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: https://sass-lang.com/
+
+.input-group > .input-group-append:not(:last-child) > .btn {
+  border-top-right-radius:  0.25rem;
+  border-bottom-right-radius:  0.25rem;
+}
+
+.table th, .table td {
+  border-top: 0;
+}
+
+hr.dashed {
+  border-top: dashed 1px;
+  border-color: #ddd;
+}
+
+.main-title {
+  display: inline-block;
+}
+
+.connection-status {
+  display: inline-block;
+  position: relative;
+  top: 3px;
+
+  .connected, .disconnected {
+    color: green;
+    font-size: 23px;
+  }
+
+  .disconnected {
+    display: block;
+    color: red;
+  }
+}
+
+.todo-connected {
+  & .connected {
+    display: block;
+  }
+
+  & .disconnected {
+    display: none;
+  }
+}
+
+.no-feedback {
+  height: 21px;
+  display: block;
+  width: 100%;
+}
