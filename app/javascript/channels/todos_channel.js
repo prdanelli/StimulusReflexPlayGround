@@ -3,11 +3,11 @@ import consumer from "./consumer"
 
 consumer.subscriptions.create("TodosChannel", {
   connected() {
-    // Called when the subscription is ready for use on the server
+    document.body.classList.add('todo-connected')
   },
 
   disconnected() {
-    // Called when the subscription has been terminated by the server
+    document.body.classList.remove('todo-connected')
   },
 
   received(data) {
