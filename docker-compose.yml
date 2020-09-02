@@ -1,28 +1,34 @@
-version: "3.3"
+version: "3.4"
+
+x-app: &app
+  build: .
+  image: stimulus-reflex-playground:1.0.0
+  tmpfs:
+    - /tmp
+  stdin_open: true
+  tty: true
+  environment: &app_env
+    ACTION_CABLE_ADAPTER: any_cable
+    REDIS_URL: redis://redis:6379/0
+    REDIS_SIDEKIQ_URL: redis://redis:6379/1
+    CABLE_URL: ws://localhost:8080/cable
+    WEBPACKER_DEV_SERVER_HOST: webpacker
+    ANYCABLE_REDIS_URL: redis://redis:6379/3
+    ANYCABLE_RPC_HOST: anycable:50051
+    ANYCABLE_HOST: 0.0.0.0
+    ANYCABLE_DEBUG: 0
 
 services:
-  app:
-    build: .
+  rails:
+    <<: *app
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
     ports:
       - 3000:3000
     volumes:
-      - .:/app
+      - .:/usr/src/app:cached
     depends_on:
       - db
       - webpacker
-    environment: &app_env
-      ACTION_CABLE_ADAPTER: any_cable
-      REDIS_URL: redis://redis:6379/0
-      REDIS_SIDEKIQ_URL: redis://redis:6379/1
-      CABLE_URL: ws://localhost:8080/cable
-      WEBPACKER_DEV_SERVER_HOST: webpacker
-      ANYCABLE_REDIS_URL: redis://redis:6379/0
-      ANYCABLE_RPC_HOST: anycable:50051
-      # ANYCABLE_HOST needs to be set 0.0.0.0 and shared between containers or the connection will fail
-      ANYCABLE_HOST: 0.0.0.0
-    stdin_open: true
-    tty: true
 
   db:
     image: mysql:5.7
@@ -42,13 +48,13 @@ services:
       retries: 5
 
   sidekiq:
-    build: .
+    <<: *app
     command: bundle exec sidekiq -C config/sidekiq.yml
     volumes:
-      - .:/app
-      - ./config/sidekiq.yml:/app/config/sidekiq.yml
+      - .:/usr/src/app
+      - ./config/sidekiq.yml:/usr/src/app/config/sidekiq.yml
     depends_on:
-      - app
+      - rails
       - redis
     environment:
       <<: *app_env
@@ -69,17 +75,17 @@ services:
 
   webpacker:
     build: .
-    command: bash -c "yarn && rm -rf /app/public/packs && bin/webpack-dev-server"
+    command: bash -c "yarn && bin/webpack-dev-server"
     volumes:
-      - .:/app
+      - .:/usr/src/app
     ports:
       - 3035:3035
     environment:
       <<: *app_env
       WEBPACKER_DEV_SERVER_HOST: 0.0.0.0
 
-  ws:
-    image: anycable/anycable-go:1.0
+  websocket:
+    image: anycable/anycable-go:latest
     ports:
       - 8080:8080
     environment:
@@ -88,13 +94,12 @@ services:
       - redis
 
   anycable:
-    build: .
+    <<: *app
     command: bundle exec anycable
     environment:
       <<: *app_env
-      ANYCABLE_DEBUG: 0
     ports:
       - 50051
     depends_on:
-      - ws
+      - websocket
       - redis
