@@ -10,6 +10,6 @@ const application = Application.start()
 const context = require.context('controllers', true, /_controller\.js$/)
 application.load(definitionsFromContext(context))
 
-// debug = process.env.RAILS_ENV === 'development'
+// const debug = process.env.RAILS_ENV === 'development'
 const debug = false
 StimulusReflex.initialize(application, { consumer, debug: debug })
