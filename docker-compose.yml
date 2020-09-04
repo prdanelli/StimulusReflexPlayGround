@@ -51,13 +51,12 @@ services:
     <<: *app
     command: bundle exec sidekiq -C config/sidekiq.yml
     volumes:
-      - .:/usr/src/app
+      - .:/usr/src/app:cached
       - ./config/sidekiq.yml:/usr/src/app/config/sidekiq.yml
     depends_on:
       - rails
       - redis
     environment:
-      <<: *app_env
       REDIS_URL: redis://redis:6379/1
 
   redis:
@@ -74,14 +73,13 @@ services:
       retries: 30
 
   webpacker:
-    build: .
+    <<: *app
     command: bash -c "yarn && bin/webpack-dev-server"
     volumes:
-      - .:/usr/src/app
+      - .:/usr/src/app:cached
     ports:
       - 3035:3035
     environment:
-      <<: *app_env
       WEBPACKER_DEV_SERVER_HOST: 0.0.0.0
 
   websocket:
@@ -96,8 +94,6 @@ services:
   anycable:
     <<: *app
     command: bundle exec anycable
-    environment:
-      <<: *app_env
     ports:
       - 50051
     depends_on:
