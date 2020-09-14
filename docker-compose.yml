@@ -2,11 +2,13 @@ version: "3.4"
 
 x-app: &app
   build: .
-  image: stimulus-reflex-playground:1.0.0
   tmpfs:
     - /tmp
   stdin_open: true
   tty: true
+  # AnyCable/Rails/Sidekiq/Webpacker require this
+  volumes:
+    - .:/usr/src/app
   environment: &app_env
     ACTION_CABLE_ADAPTER: any_cable
     REDIS_URL: redis://redis:6379/0
@@ -16,7 +18,7 @@ x-app: &app
     ANYCABLE_REDIS_URL: redis://redis:6379/3
     ANYCABLE_RPC_HOST: anycable:50051
     ANYCABLE_HOST: 0.0.0.0
-    ANYCABLE_DEBUG: 0
+    ANYCABLE_DEBUG: 1
 
 services:
   rails:
@@ -25,23 +27,22 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - .:/usr/src/app:cached
+      - .:/usr/src/app
     depends_on:
-      - db
+      - database
       - webpacker
+      - websocket
 
-  db:
-    image: mysql:5.7
+  database:
+    image: mariadb:10.5
     environment:
-      MYSQL_DATABASE: stimulusreflex_development
       MYSQL_ROOT_PASSWORD: root
-    command:
-      --max_allowed_packet=1073741824
+      MYSQL_DATABASE: app_development
     volumes:
-      - ./docker/mysql/conf.d:/etc/mysql/conf.d
       - ./docker/mysql/data:/var/lib/mysql
     ports:
       - 3306:3306
+    restart: always
     healthcheck:
       test: mysql --user=root --password=$$MYSQL_ROOT_PASSWORD -e 'SHOW DATABASES;'
       timeout: 5s
@@ -50,9 +51,6 @@ services:
   sidekiq:
     <<: *app
     command: bundle exec sidekiq -C config/sidekiq.yml
-    volumes:
-      - .:/usr/src/app:cached
-      - ./config/sidekiq.yml:/usr/src/app/config/sidekiq.yml
     depends_on:
       - rails
       - redis
@@ -64,7 +62,7 @@ services:
     ports:
       - 6379:6379
     volumes:
-      - ./docker/redis/:/data
+      - ./docker/redis:/data
     command: ["--appendonly yes"]
     healthcheck:
       test: redis-cli ping
@@ -75,8 +73,6 @@ services:
   webpacker:
     <<: *app
     command: bash -c "yarn && bin/webpack-dev-server"
-    volumes:
-      - .:/usr/src/app:cached
     ports:
       - 3035:3035
     environment:
